@@ -36,9 +36,6 @@ async function fetchHelper(url) {
   }
 }
 
-// TODO (you): look up a city with the geocoding API and return
-// { name, region, country, latitude, longitude, timezone } for the first result.
-// Throw a 404 HttpError when there are no results.
 export async function geocodeCity(name) {
   const searchParams = new URLSearchParams({ name, count: 1, language: 'en', format: 'json' });
   const search = await fetchHelper(`${config.geocodingUrl}/search?${searchParams}`);
@@ -47,7 +44,9 @@ export async function geocodeCity(name) {
     throw new HttpError(404, `No geocoding data found for city ${name}`);
   }
   
-  const {cityName, latitude, longitude, country, timezone, admin1} = search.results[0];
+  return search.results[0];
+  
+  /*const {cityName, latitude, longitude, country, timezone, admin1} = search.results[0];
   
   return {
     name: cityName,
@@ -55,12 +54,36 @@ export async function geocodeCity(name) {
     country,
     latitude,
     longitude,
-    timezone    
-  };
+    timezone
+  };*/
 }
 
 // TODO (you): get the current weather and a 3-day daily forecast from the
 // forecast API and return the parsed response.
 export async function getForecast(latitude, longitude) {
-  throw new Error('getForecast is not written yet');
+  const searchParams = new URLSearchParams({latitude, longitude});
+  
+  const search = await fetchHelper(`${config.geocodingUrl}/forecast?${searchParams}
+    &current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,
+    weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,
+    precipitation_probability_max&timezone=auto&forecast_days=3`);
+  
+  ;
+  
+  /*const {time, temperature_2m, apparent_temperature, relative_humidity_2m, wind_speed_10m, weather_code} = search.current;
+  const daily = search.daily;
+  
+  return {
+    current: {
+      time,
+      temperatureC: temperature_2m,
+      feelsLikeC: apparent_temperature,
+      humidityPercent: relative_humidity_2m,
+      windKmh: wind_speed_10m,
+      weatherCode: weather_code,
+      conditions
+    },
+  };*/
+  
+  return {current: search.current, daily: search.daily};
 }
