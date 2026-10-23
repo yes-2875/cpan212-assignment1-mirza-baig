@@ -68,8 +68,6 @@ export async function getForecast(latitude, longitude) {
     weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,
     precipitation_probability_max&timezone=auto&forecast_days=3`);
   
-  ;
-  
   /*const {time, temperature_2m, apparent_temperature, relative_humidity_2m, wind_speed_10m, weather_code} = search.current;
   const daily = search.daily;
   
