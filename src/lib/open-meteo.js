@@ -4,13 +4,7 @@ import { HttpError } from './http-error.js';
 // This is the only file that calls fetch or knows Open-Meteo's URLs.
 // The exact requests are on the assignment page.
 
-// TODO (you): write a helper that fetches a URL and returns the parsed JSON.
-//   - Pass signal: AbortSignal.timeout(config.upstreamTimeoutMs) to fetch.
-//   - fetch resolves for every HTTP status, so check res.ok yourself.
-//   - Turn every failure into an HttpError: 504 when the timeout fired
-//     (err.name is 'TimeoutError'), 502 for a network failure, a status that
-//     isn't ok, or a body that isn't JSON.
-export async function fetchHelper(url) {
+async function fetchHelper(url) {
   let res;
   try {
     res = await fetch(url, {signal: AbortSignal.timeout(config.upstreamTimeoutMs)});
@@ -31,7 +25,7 @@ export async function fetchHelper(url) {
     
     // Throw 502 Bad Gateway error for invalid JSON response
     if (error.name === 'SyntaxError') {
-      throw new HttpError(502, `Not JSON: ${error.name} (${error.message})`);
+      throw new HttpError(502, `Failed to fetch Open-Meteo API: Not JSON (${error.message})`);
     }
     
     // Throw 502 Bad Gateway error for network failures
@@ -46,7 +40,23 @@ export async function fetchHelper(url) {
 // { name, region, country, latitude, longitude, timezone } for the first result.
 // Throw a 404 HttpError when there are no results.
 export async function geocodeCity(name) {
-  throw new Error('geocodeCity is not written yet');
+  const searchParams = new URLSearchParams({ name, count: 1, language: 'en', format: 'json' });
+  const search = await fetchHelper(`${config.geocodingUrl}/search?${searchParams}`);
+  
+  if (!search.results) {
+    throw new HttpError(404, `No geocoding data found for city ${name}`);
+  }
+  
+  const {cityName, latitude, longitude, country, timezone, admin1} = search.results;
+  
+  return {
+    name: cityName,
+    region: admin1,
+    country,
+    latitude,
+    longitude,
+    timezone    
+  };
 }
 
 // TODO (you): get the current weather and a 3-day daily forecast from the
