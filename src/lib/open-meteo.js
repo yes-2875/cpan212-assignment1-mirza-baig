@@ -47,7 +47,7 @@ export async function geocodeCity(name) {
     throw new HttpError(404, `No geocoding data found for city ${name}`);
   }
   
-  const {cityName, latitude, longitude, country, timezone, admin1} = search.results;
+  const {cityName, latitude, longitude, country, timezone, admin1} = search.results[0];
   
   return {
     name: cityName,
