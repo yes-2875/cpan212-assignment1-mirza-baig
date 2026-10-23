@@ -11,21 +11,34 @@ import { HttpError } from './http-error.js';
 //     (err.name is 'TimeoutError'), 502 for a network failure, a status that
 //     isn't ok, or a body that isn't JSON.
 export async function fetchHelper(url) {
-  let res, result;
+  let res;
   try {
     res = await fetch(url, {signal: AbortSignal.timeout(config.upstreamTimeoutMs)});
     
+    // Throw 502 Bad Gateway error for a status that is not ok,
+    // report original status code in message
     if (!res.ok) {
       throw new HttpError(502, `Failed to fetch Open-Meteo API: ${res.status} (${res.statusText})`);
     }
     
-    result = res.json();
+    return res.json();
     
   } catch (error) {
+    // Throw 504 Timed Out error if the AbortSignal timeout fired during the request
     if (error.name === 'TimeoutError') {
       throw new HttpError(504, 'The Open-Meteo API took too long to answer, try again later');
     }
     
+    // Throw 502 Bad Gateway error for invalid JSON response
+    if (error.name === 'SyntaxError') {
+      throw new HttpError(502, `Not JSON: ${error.name} (${error.message})`);
+    }
+    
+    // Throw 502 Bad Gateway error for network failures
+    // (no response, unknown host, refused connection, no network)
+    if (error.name === 'TypeError' && error.message === 'fetch failed') {
+      throw new HttpError(502, `Network failure on Open-Meteo API: ${error.cause}`);
+    }
   }
 }
 
