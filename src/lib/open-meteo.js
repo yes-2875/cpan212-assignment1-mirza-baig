@@ -17,7 +17,8 @@ async function fetchHelper(url) {
     return res.json();
     
   } catch (error) {
-    // Throw general errors
+    // Actually throw HttpErrors caught in the crossfire
+    // instead of leaving them to dry and causing problems
     if (error instanceof HttpError) {
       throw error;
     }
@@ -51,8 +52,8 @@ export async function geocodeCity(name) {
   return search.results[0];
 }
 
-// TODO (you): get the current weather and a 3-day daily forecast from the
-// forecast API and return the parsed response.
+// Gets the current weather of a city's latitude/longitude
+// and a 3-day forecast from the forecast API and returns the responses as data.
 export async function getForecast(latitude, longitude) {
   const searchParams = new URLSearchParams({latitude, longitude});
   const url = `${config.forecastUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
