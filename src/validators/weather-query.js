@@ -4,6 +4,20 @@ import { HttpError } from '../lib/http-error.js';
 // HttpError with details.city when it breaks a rule from the assignment page.
 export function parseCity(value) {
   
+  if (!value || value === null || value === undefined) {
+    throw new HttpError(400, 'Validation failed', {city: 'city was not provided'});
+  }
+  
+  let city = value;
+  if (typeof city === 'string') { city = value.trim(); }
+  
+  if (!(city.length >= 2 && city.length <= 60)) {
+    throw new HttpError(400, 'Validation failed', {city: 'city must be between 2 and 60 characters'});
+  }
+  
+  if (typeof city === 'array') {
+    
+  }
 }
 
 // TODO (you): check ?cities= and return an array of trimmed city names. Throw a

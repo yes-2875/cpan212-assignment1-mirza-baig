@@ -1,9 +1,9 @@
 import { config } from '../config.js';
 import { HttpError } from './http-error.js';
 
-// This is the only file that calls fetch or knows Open-Meteo's URLs.
-// The exact requests are on the assignment page.
-
+// Helper function for fetching Open-Meteo API requests.
+// Handles multiple different types of errors and sends them
+// to the error handler middleware.
 async function fetchHelper(url) {
   try {
     const res = await fetch(url, {signal: AbortSignal.timeout(config.upstreamTimeoutMs)});
@@ -49,24 +49,13 @@ export async function geocodeCity(name) {
   }
   
   return search.results[0];
-  
-  /*const {cityName, latitude, longitude, country, timezone, admin1} = search.results[0];
-  
-  return {
-    name: cityName,
-    region: admin1,
-    country,
-    latitude,
-    longitude,
-    timezone
-  };*/
 }
 
 // TODO (you): get the current weather and a 3-day daily forecast from the
 // forecast API and return the parsed response.
 export async function getForecast(latitude, longitude) {
   const searchParams = new URLSearchParams({latitude, longitude});
-  const url = `${config.geocodingUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
+  const url = `${config.forecastUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
   
   const search = await fetchHelper(url);
   

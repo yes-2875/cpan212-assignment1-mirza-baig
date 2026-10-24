@@ -12,11 +12,9 @@ import { describeWeatherCode } from './weather-codes.js';
 export async function getCityWeather(city) {
   
   const rawGeocode = await geocodeCity(city);
-  
   const {name, longitude, latitude, country, timezone} = rawGeocode;
   
   const rawForecast = await getForecast(longitude, latitude);
-  
   const { time, temperature_2m, apparent_temperature,
   relative_humidity_2m, wind_speed_10m, weather_code } = rawForecast.current;
   
