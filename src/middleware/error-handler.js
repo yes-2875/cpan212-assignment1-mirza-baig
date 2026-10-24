@@ -8,7 +8,14 @@ export function errorHandler(err, req, res, next) {
 
   // TODO (you): when err is an HttpError, respond with err.status and
   // { error: { message: err.message, details: err.details } }.
-  
+  if (err instanceof HttpError || err.status < 500) {
+    res.status(err.status).json({
+      error: {
+        message: err.message,
+        detaails: err.details,
+      }
+    });
+  }
 
   // Anything else is a bug. The details go to the terminal, never to the client.
   console.error(err);
