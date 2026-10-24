@@ -7,7 +7,8 @@ export function errorHandler(err, req, res, next) {
   }
 
   if (err instanceof HttpError || err.status < 500) {
-    res.status(err.status).json({
+    // Return the error JSON to prevent unneeded call stacks in server log
+    return res.status(err.status).json({
       error: {
         message: err.message,
         details: err.details,
