@@ -5,9 +5,8 @@ import { HttpError } from './http-error.js';
 // The exact requests are on the assignment page.
 
 async function fetchHelper(url) {
-  let res;
   try {
-    res = await fetch(url, {signal: AbortSignal.timeout(config.upstreamTimeoutMs)});
+    const res = await fetch(url, {signal: AbortSignal.timeout(config.upstreamTimeoutMs)});
     
     // Throw 502 Bad Gateway error for a status that is not ok,
     // report original status code in message
@@ -62,25 +61,14 @@ export async function geocodeCity(name) {
 // forecast API and return the parsed response.
 export async function getForecast(latitude, longitude) {
   const searchParams = new URLSearchParams({latitude, longitude});
-  const url = `${config.geocodingUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
+  const url = `${config.forecastUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
   
   const search = await fetchHelper(url);
+  
+  if (!search.current) {
+    throw new HttpError(404, `No forecast data found for latitude ${latitude}, longitude ${longitude}`);
+  }
+  
   console.log(search);
-  
-  /*const {time, temperature_2m, apparent_temperature, relative_humidity_2m, wind_speed_10m, weather_code} = search.current;
-  const daily = search.daily;
-  
-  return {
-    current: {
-      time,
-      temperatureC: temperature_2m,
-      feelsLikeC: apparent_temperature,
-      humidityPercent: relative_humidity_2m,
-      windKmh: wind_speed_10m,
-      weatherCode: weather_code,
-      conditions
-    },
-  };*/
-  
   return {current: search.current, daily: search.daily};
 }

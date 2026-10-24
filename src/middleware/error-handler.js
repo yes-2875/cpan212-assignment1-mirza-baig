@@ -6,13 +6,11 @@ export function errorHandler(err, req, res, next) {
     return next(err);
   }
 
-  // TODO (you): when err is an HttpError, respond with err.status and
-  // { error: { message: err.message, details: err.details } }.
   if (err instanceof HttpError || err.status < 500) {
     res.status(err.status).json({
       error: {
         message: err.message,
-        detaails: err.details,
+        details: err.details,
       }
     });
   }

@@ -7,9 +7,9 @@ export const weatherRouter = Router();
 // TODO (you): GET /api/weather?city=Toronto
 // Validate with parseCity, get the summary with getCityWeather, and respond
 // with { data, attribution }. Routes never call fetch themselves.
-weatherRouter.get('/weather', (req, res) => {
+weatherRouter.get('/weather', async (req, res) => {
   const {city} = req.query;
-  const data = getCityWeather(city);
+  const data = await getCityWeather(city);
   
   res.status(200).json({data, attribution: 'Weather data by Open-Meteo.com (https://open-meteo.com/)'});
 });

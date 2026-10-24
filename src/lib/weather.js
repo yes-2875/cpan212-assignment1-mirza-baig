@@ -13,10 +13,9 @@ export async function getCityWeather(city) {
   
   const rawGeocode = await geocodeCity(city);
   
-  const {name, latitude, longitude, country, timezone} = rawGeocode;
+  const {name, longitude, latitude, country, timezone} = rawGeocode;
   
   const rawForecast = await getForecast(longitude, latitude);
-  console.log('Raw forecast data: ' + rawForecast);
   
   const { time, temperature_2m, apparent_temperature,
   relative_humidity_2m, wind_speed_10m, weather_code } = rawForecast.current;
