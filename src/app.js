@@ -8,6 +8,7 @@ import { cacheRouter } from './routes/cache.routes.js';
 export const app = express();
 
 app.use(requestLogger);
+app.use(express.json());
 
 app.use('/api', weatherRouter);
 app.use('/api', cacheRouter);

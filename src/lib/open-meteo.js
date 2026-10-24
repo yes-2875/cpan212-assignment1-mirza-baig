@@ -17,6 +17,11 @@ async function fetchHelper(url) {
     return res.json();
     
   } catch (error) {
+    // Throw general errors
+    if (error instanceof HttpError) {
+      throw error;
+    }
+    
     // Throw 504 Timed Out error if the AbortSignal timeout fired during the request
     if (error.name === 'TimeoutError') {
       throw new HttpError(504, 'The Open-Meteo API took too long to answer, try again later');
@@ -61,7 +66,7 @@ export async function geocodeCity(name) {
 // forecast API and return the parsed response.
 export async function getForecast(latitude, longitude) {
   const searchParams = new URLSearchParams({latitude, longitude});
-  const url = `${config.forecastUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
+  const url = `${config.geocodingUrl}/forecast?${searchParams}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=3`;
   
   const search = await fetchHelper(url);
   
