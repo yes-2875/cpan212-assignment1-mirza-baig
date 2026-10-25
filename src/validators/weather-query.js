@@ -1,11 +1,6 @@
 import { HttpError } from '../lib/http-error.js';
 
-// TODO (you): check ?city= and return the trimmed city name. Throw a 400
-// HttpError with details.city when it breaks a rule from the assignment page.
 export function parseCity(value) {
-  
-  //console.log("city:", value, "of type:", typeof value);
-  
   if (!value || value === null || value === undefined) {
     throw new HttpError(400, 'Invalid query', {city: 'city was not provided'});
   }
@@ -24,6 +19,8 @@ export function parseCity(value) {
   if (typeof city === 'object') {
     throw new HttpError(400, 'Invalid query', {city: 'city cannot be repeated'});
   }
+  
+  return city;
 }
 
 // TODO (you): check ?cities= and return an array of trimmed city names. Throw a
@@ -43,7 +40,6 @@ export function parseCities(value) {
   }
   
   if (typeof cities === 'string') {
-    
     // Error if the cities parameter is empty
     if (value.trim() === '') {
       throw new HttpError(400, 'Invalid query', {cities: 'cities cannot be empty'});
@@ -58,7 +54,7 @@ export function parseCities(value) {
   const prevCities = [];
   
   // Loop through cities array
-  for (i = 0; i < cities.length; i++) {
+  for (let i = 0; i < cities.length; i++) {
     
     // Compare each city name to all previous city names in the array
     // This runs before actually assigning the city to the list of previous city names
@@ -89,4 +85,5 @@ export function parseCities(value) {
     throw new HttpError(400, 'Invalid query', {cities: 'cities must only include 2 to 5 city names'});
   }
   
+  return cities;
 }
