@@ -1,21 +1,29 @@
 import { HttpError } from '../lib/http-error.js';
 
+// Trim the value of ?city= and validate it doesn't break any of the
+// rules mentioned in the assignment instructions
 export function parseCity(value) {
+  
+  // Error if city was not even provided
   if (!value || value === null || value === undefined) {
     throw new HttpError(400, 'Invalid query', {city: 'city was not provided'});
   }
   
+  // If query is a string, trim leading and trailing whitespaces from it 
   let city = value;
   if (typeof city === 'string') { city = value.trim(); }
   
+  // Error if city was provided but is empty
   if (city === '') {
     throw new HttpError(400, 'Invalid query', {city: 'city cannot be empty'});
   }
   
+  // Error if city is not between 2 to 60 chars
   if (!(city.length >= 2 && city.length <= 60)) {
     throw new HttpError(400, 'Invalid query', {city: 'city must be from 2 to 60 characters'});
   }
   
+  // Error if ?city=a&city=b etc..
   if (typeof city === 'object') {
     throw new HttpError(400, 'Invalid query', {city: 'city cannot be repeated'});
   }
@@ -23,8 +31,8 @@ export function parseCity(value) {
   return city;
 }
 
-// TODO (you): check ?cities= and return an array of trimmed city names. Throw a
-// 400 HttpError with details.cities when it breaks a rule from the assignment page.
+// Check the value of ?cities= and return an array of trimmed city names.
+// Throw an error when it breaks a rule from the assignment instructions.
 export function parseCities(value) {
   
   // Error if the cities parameter was never provided

@@ -64,6 +64,5 @@ export async function getForecast(latitude, longitude) {
     throw new HttpError(404, `No forecast data found for latitude ${latitude}, longitude ${longitude}`);
   }
   
-  console.log(search);
   return {current: search.current, daily: search.daily};
 }
