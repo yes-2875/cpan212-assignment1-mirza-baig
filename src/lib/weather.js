@@ -6,10 +6,11 @@ import { Cache } from './cache.js';
 // Create a new Cache with config.cacheTtlSeconds amount of TTL seconds
 const cache = new Cache(config.cacheTtlSeconds);
 
-// TODO (you): return the weather summary for one city, in the shape shown on
-// the assignment page. Check the cache first. On a miss, geocode the city, get
-// the forecast, build the summary, store it, and return it with cached: false.
-// On a hit, return the stored summary with cached: true.
+// Returns the weather summary for one city, in the appropriate JSON shape
+// as required. Checks if the city is in the cache first, if it's there
+// and the entry hasn't expired then that will be returned with cached: true.
+// Otherwise geocode the city, get the forecast, build the summary,
+// store it in the cache, and return it with cached: false.
 export async function getCityWeather(city) {
   
   const cached = cache.retrieve(city.toLowerCase());
@@ -60,7 +61,7 @@ export async function getCityWeather(city) {
     },
     
     daily: days,
-    fetchedAt: Date.now(),
+    fetchedAt: new Date().toISOString(),
     cached: false,
   };
   
@@ -69,7 +70,7 @@ export async function getCityWeather(city) {
   
 }
 
-// TODO (you): return the cache statistics for GET /api/cache/stats.
+// Returns the cache statistics for GET /api/cache/stats.
 export function getCacheStats() {
-  throw new Error('getCacheStats is not written yet');
+  return cache.reportStats();
 }

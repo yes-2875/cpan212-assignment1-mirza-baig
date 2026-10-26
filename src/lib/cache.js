@@ -13,7 +13,6 @@ export class Cache extends Map {
     
     retrieve(key) {
         const entry = super.get(key);
-        console.log(entry);
         
         if (entry && entry.expiresAt > Date.now()) {
             console.log(`Cache hit on ${key}`);
@@ -30,7 +29,6 @@ export class Cache extends Map {
     store(key, value) {
         const newValue = Object.assign({}, value, {expiresAt: Date.now() + this.ttlSeconds * 1000, cached: true});
         super.set(key, newValue);
-        //console.log('super.get(key):', super.get(key));
     }
     
     reportStats() {
@@ -40,6 +38,6 @@ export class Cache extends Map {
             if (value.expiresAt > Date.now()) { entries++; }
         });
         
-        return {entries, hits, misses, ttlSeconds};
+        return {entries, hits: this.hits, misses: this.misses, ttlSeconds: this.ttlSeconds};
     }
 }
