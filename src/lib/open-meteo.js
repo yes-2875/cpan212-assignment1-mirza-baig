@@ -25,7 +25,7 @@ async function fetchHelper(url) {
     
     // Throw 504 Timed Out error if the AbortSignal timeout fired during the request
     if (error.name === 'TimeoutError') {
-      throw new HttpError(504, 'The Open-Meteo API took too long to answer, try again later');
+      throw new HttpError(504, `The Open-Meteo API did not respond within ${config.upstreamTimeoutMs}ms`);
     }
     
     // Throw 502 Bad Gateway error for invalid JSON response
