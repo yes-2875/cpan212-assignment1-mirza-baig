@@ -9,31 +9,37 @@ export class Cache extends Map {
         this.ttlSeconds = ttlSeconds;
         this.hits = 0;
         this.misses = 0;
+    }
+    
+    retrieve(key) {
+        const entry = super.get(key);
+        console.log(entry);
         
-        this.retrieve = (key) => {
-            const entry = super.get(key);
-            if (entry && entry.expiresAt > Date.now()) {
-                hits++;
-                return entry;
-            } else {
-                misses++;
-                return null;
-            }
-        }
-        
-        this.store = (key, value) => {
-            value.cached = true;
-            super.set(key, value);
-        }
-        
-        this.reportStats = () => {
-            let entries = 0;
+        if (entry && entry.expiresAt > Date.now()) {
+            console.log(`Cache hit on ${key}`);
+            this.hits++;
+            return entry;
             
-            super.forEach((value, key, map) => {
-                if (value.expiresAt > Date.now()) { entries++; }
-            });
-            
-            return {entries, hits, misses, ttlSeconds};
+        } else {
+            console.log(`Cache missed on ${key}`);
+            this.misses++;
+            return null;
         }
+    }
+    
+    store(key, value) {
+        const newValue = Object.assign({}, value, {expiresAt: Date.now() + this.ttlSeconds * 1000, cached: true});
+        super.set(key, newValue);
+        //console.log('super.get(key):', super.get(key));
+    }
+    
+    reportStats() {
+        let entries = 0;
+        
+        super.forEach((value, key, map) => {
+            if (value.expiresAt > Date.now()) { entries++; }
+        });
+        
+        return {entries, hits, misses, ttlSeconds};
     }
 }
